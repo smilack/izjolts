@@ -10,12 +10,21 @@
     (update! screen :renderer (stage))
     (let [blocks (u/block-textures "blocks.png")]
       (update! screen :blocks blocks)
+      (add-timer! screen :step 1 1)
       (u/bucket-border (:border blocks))))
   
   :on-render
   (fn on-render[screen entities]
     (clear!)
-    (render! screen entities)))
+    (render! screen entities))
+  
+  :on-key-down
+  (fn on-key-down[{:keys [keycode]} entities]
+    entities)
+  
+  :on-timer
+  (fn on-timer[{:keys [id blocks]} entities]
+    entities))
 
 (defgame izjolts
   :on-create
