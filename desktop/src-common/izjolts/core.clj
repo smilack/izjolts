@@ -1,14 +1,19 @@
 (ns izjolts.core
-  (:require [play-clj.core :refer :all]
-            [play-clj.ui :refer :all]))
+  (:require [izjolts.pieces :as p]
+            [izjolts.utils :as u]
+            [play-clj.core :refer :all]
+            [play-clj.g2d :refer :all]))
 
 (defscreen main-screen
   :on-show
-  (fn [screen entities]
+  (fn on-show[screen entities]
     (update! screen :renderer (stage))
-    (label "Hello world!" (color :white)))
+    (let [blocks (u/block-textures "blocks.png")]
+      (update! screen :blocks blocks)
+      (u/bucket-border (:border blocks))))
+  
   :on-render
-  (fn [screen entities]
+  (fn on-render[screen entities]
     (clear!)
     (render! screen entities)))
 
