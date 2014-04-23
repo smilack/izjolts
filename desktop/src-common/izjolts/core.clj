@@ -11,6 +11,12 @@
         new-on-deck (p/random-piece blocks)]
     (conj (replace {on-deck new-current} entities) new-on-deck)))
     
+(defn move-current
+  [entities direction]
+  (let [current (some #(if (:current? %) %) entities)
+        moved (p/shift-piece current direction)]
+    (if moved
+      (replace {current moved} entities))))
 
 (defscreen main-screen
   :on-show
@@ -30,13 +36,19 @@
   
   :on-key-down
   (fn on-key-down[{:keys [keycode]} entities]
-    entities)
+    (let [direction (condp = keycode
+                      (key-code :dpad-down) :down
+                      (key-code :dpad-left) :left
+                      (key-code :dpad-right) :right
+                      nil)]
+      (if direction
+        (move-current entities direction))))
   
   :on-timer
   (fn on-timer[{:keys [id blocks]} entities]
     (if-not (some #(:current? %) entities)
       (next-piece entities blocks)
-      (comment "else"))))
+      (move-current entities :down))))
 
 (defgame izjolts
   :on-create

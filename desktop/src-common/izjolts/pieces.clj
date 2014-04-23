@@ -7,9 +7,10 @@
   [piece dx dy]
   (every?
     #(and
-       (< 0 (+ (:bucket-x %) dx) u/bucket-width)
-       (< 0 (+ (:bucket-y %) dy) u/bucket-height)
-       (comment "check for existing monominoes"))
+       (<= 0 (+ (:bucket-x %) dx))
+       (< (+ (:bucket-x %) dx) u/bucket-width)
+       (<= 0 (+ (:bucket-y %) dy))
+       (< (+ (:bucket-y %) dy) u/bucket-height))
     (:entities piece)))
 
 (defn move-monomino
@@ -35,7 +36,8 @@
              :left 0
              :right 0)]
     (if (can-move? piece dx dy)
-      (move-piece piece dx dy))))
+      (move-piece piece dx dy)
+      nil)))
 
 (defn call-up
   [on-deck]
