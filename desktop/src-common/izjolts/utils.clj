@@ -17,7 +17,7 @@
 (def screen-height (* side border-height))
 
 (def ^:const start-x 3)
-(def ^:const start-y 15)
+(def ^:const start-y 16)
 
 (defn block-textures
   [filename]
