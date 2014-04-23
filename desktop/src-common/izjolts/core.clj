@@ -27,7 +27,8 @@
       (update! screen :blocks blocks)
       (add-timer! screen :step 1 1)
       (conj entities
-            (u/bucket-border (:border blocks))
+            (u/block-border (:border blocks) 0 0 u/border-width u/border-height)
+            (u/block-border (:border blocks) u/on-deck-x u/on-deck-y 6 6)
             (p/random-piece blocks))))
   
   :on-render
