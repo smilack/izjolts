@@ -2,9 +2,7 @@
   (:require [izjolts.utils :as u]
             [izjolts.data :as d]))
 
-(def piece-names [:I :Z :J :O :L :T :S])
-
-(defn can-move
+(defn can-move?
   [piece dx dy]
   (every?
     #(and
@@ -25,12 +23,6 @@
   (let [new-entities (map #(move-monomino % dx dy) (:entities piece))]
     (assoc piece :entities new-entities)))
 
-(defn piece
-  "Creates a new piece in the starting area with default rotation."
-  [name]
-  (update-position
-    ))
-
 (defn shift-piece
   [piece direction]
   (let [dx (case direction
@@ -43,3 +35,8 @@
              :right 0)]
     (if (can-move? piece dx dy)
       (move-piece piece dx dy))))
+
+(defn piece
+  "Creates a new piece in the starting area with default rotation."
+  [name]
+  nil)

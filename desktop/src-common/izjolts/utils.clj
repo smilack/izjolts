@@ -1,7 +1,9 @@
 (ns izjolts.utils
-  (:require [izjolts.pieces :as p]
-            [play-clj.core :refer [bundle]]
+  (:require [play-clj.core :refer [bundle]]
             [play-clj.g2d :refer [texture texture! texture*]]))
+
+(def piece-names [:I :Z :J :O :L :T :S])
+(def texture-names (conj piece-names :border))
 
 (def ^:const side 30)
 
@@ -13,8 +15,6 @@
 
 (def screen-width (* side border-width 2))
 (def screen-height (* side border-height))
-
-(def texture-names (conj p/piece-names :border))
 
 (defn block-textures
   [filename]
@@ -37,7 +37,7 @@
         border (apply bundle border-pieces)]
     border))
 
-(def bucket->screen
+(defn bucket->screen
   "Converts coordinates in the bucket to coordinates on the screen, with (0, 0)
    at the bottom left."
   [bucket-x bucket-y]
