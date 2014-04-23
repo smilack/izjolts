@@ -4,19 +4,20 @@
             [play-clj.core :refer :all]
             [play-clj.g2d :refer :all]))
 
+
+
 (defn next-piece
   [entities blocks]
-  (let [on-deck (some #(if (:on-deck? %) %) entities)
+  (let [on-deck (u/find-e :on-deck? entities)
         new-current (p/call-up on-deck)
         new-on-deck (p/random-piece blocks)]
     (conj (replace {on-deck new-current} entities) new-on-deck)))
-    
+
 (defn move-current
   [entities direction]
-  (let [current (some #(if (:current? %) %) entities)
+  (let [current (u/find-e :current? entities)
         moved (p/shift-piece current direction)]
-    (if moved
-      (replace {current moved} entities))))
+    moved))
 
 (defscreen main-screen
   :on-show
@@ -36,19 +37,22 @@
   
   :on-key-down
   (fn on-key-down[{:keys [keycode]} entities]
-    (let [direction (condp = keycode
-                      (key-code :dpad-down) :down
-                      (key-code :dpad-left) :left
-                      (key-code :dpad-right) :right
-                      nil)]
-      (if direction
-        (move-current entities direction))))
+    (if-let [direction (condp = keycode
+                         (key-code :dpad-down) :down
+                         (key-code :dpad-left) :left
+                         (key-code :dpad-right) :right
+                         nil)]
+      (if-let [moved (move-current entities direction)]
+        (replace {(u/find-e :current? entities) moved} entities))))
   
   :on-timer
   (fn on-timer[{:keys [id blocks]} entities]
-    (if-not (some #(:current? %) entities)
+    (if-not (some :current? entities)
       (next-piece entities blocks)
-      (move-current entities :down))))
+      (if-let [moved (move-current entities :down)]
+        (replace {(u/find-e :current? entities) moved} entities)
+        (let [current (u/find-e :current? entities)]
+          (concat (filterv (complement :current?) entities) (:entities current)))))))
 
 (defgame izjolts
   :on-create

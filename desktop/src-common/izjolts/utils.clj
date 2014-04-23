@@ -48,3 +48,7 @@
    at the bottom left."
   [bucket-x bucket-y]
   [(* side (inc bucket-x)) (* side (inc bucket-y))])
+
+(defn find-e
+  [label entities]
+  (some #(if (label %) %) entities))
