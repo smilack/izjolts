@@ -1,6 +1,7 @@
 (ns izjolts.pieces
   (:require [izjolts.utils :as u]
-            [izjolts.data :as d]))
+            [izjolts.data :as d]
+            [play-clj.core :refer [bundle]))
 
 (defn can-move?
   [piece dx dy]
@@ -13,8 +14,8 @@
 
 (defn move-monomino
   [monomino dx dy]
-  (let [bucket-x (+ (:bucket-x monomino dx))
-        bucket-y (+ (:bucket-y monomino) dy)
+  (let [bucket-x (+ (:bucket-x monomino 0) dx)
+        bucket-y (+ (:bucket-y monomino 0) dy)
         [x y] (u/bucket->screen bucket-x bucket-y)]
     (assoc monomino :x x :y y :bucket-x bucket-x :bucket-y bucket-y)))
 
@@ -38,5 +39,13 @@
 
 (defn piece
   "Creates a new piece in the starting area with default rotation."
-  [name]
-  nil)
+  [name blocks]
+  (let [block (name blocks)
+        matrix (-> d/pieces :name first reverse) ; flip vertically to match coordinate system
+        rows (count matrix)
+        cols (count (first matrix))
+        monominoes (for [r (range rows) c (range cols) :when (-> matrix (nth r) (nth c))]
+                     (move-monomino r c))
+        piece-bundle (apply bundle monominoes)]
+    (move-piece piece-bundle u/start-x u/start-y)))
+      

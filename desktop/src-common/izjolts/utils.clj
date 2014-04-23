@@ -16,6 +16,9 @@
 (def screen-width (* side border-width 2))
 (def screen-height (* side border-height))
 
+(def ^:const start-x 3)
+(def ^:const start-y 15)
+
 (defn block-textures
   [filename]
   (let [sheet (texture filename)
