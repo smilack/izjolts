@@ -36,6 +36,9 @@
         border-pieces (concat left right bottom top)
         border (apply bundle border-pieces)]
     border))
-        
-        
-    
+
+(def bucket->screen
+  "Converts coordinates in the bucket to coordinates on the screen, with (0, 0)
+   at the bottom left."
+  [[bucket-x bucket-y]]
+  [(* side (inc bucket-x)) (* side (inc bucket-y))])
