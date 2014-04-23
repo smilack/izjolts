@@ -4,6 +4,14 @@
             [play-clj.core :refer :all]
             [play-clj.g2d :refer :all]))
 
+(defn next-piece
+  [entities blocks]
+  (let [on-deck (some #(if (:on-deck? %) %) entities)
+        new-current (p/call-up on-deck)
+        new-on-deck (p/random-piece blocks)]
+    (conj (replace {on-deck new-current} entities) new-on-deck)))
+    
+
 (defscreen main-screen
   :on-show
   (fn on-show[screen entities]
@@ -11,7 +19,9 @@
     (let [blocks (u/block-textures "blocks.png")]
       (update! screen :blocks blocks)
       (add-timer! screen :step 1 1)
-      (u/bucket-border (:border blocks))))
+      (conj entities
+            (u/bucket-border (:border blocks))
+            (p/random-piece blocks))))
   
   :on-render
   (fn on-render[screen entities]
@@ -24,7 +34,9 @@
   
   :on-timer
   (fn on-timer[{:keys [id blocks]} entities]
-    entities))
+    (if-not (some #(:current? %) entities)
+      (next-piece entities blocks)
+      (comment "else"))))
 
 (defgame izjolts
   :on-create

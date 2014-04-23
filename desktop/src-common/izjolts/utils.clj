@@ -19,6 +19,9 @@
 (def ^:const start-x 3)
 (def ^:const start-y 16)
 
+(def ^:const on-deck-x 12)
+(def ^:const on-deck-y 16)
+
 (defn block-textures
   [filename]
   (let [sheet (texture filename)

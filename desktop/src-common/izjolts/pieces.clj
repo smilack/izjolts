@@ -37,8 +37,15 @@
     (if (can-move? piece dx dy)
       (move-piece piece dx dy))))
 
+(defn call-up
+  [on-deck]
+  (-> on-deck
+    (dissoc :on-deck?)
+    (assoc :current? true)
+    (move-piece (- u/start-x u/on-deck-x) (- u/start-y u/on-deck-y))))
+
 (defn piece
-  "Creates a new piece in the starting area with default rotation."
+  "Creates a new piece in the on-deck area with default rotation."
   [name blocks]
   (let [block (name blocks)
         matrix (-> d/pieces name first reverse) ; flip vertically to match coordinate system
@@ -47,9 +54,9 @@
         monominoes (for [r (range rows) c (range cols) :when (-> matrix (nth r) (nth c))]
                      (move-monomino block c r))
         piece-bundle (apply bundle monominoes)]
-    (move-piece piece-bundle u/start-x u/start-y)))
+    (move-piece piece-bundle u/on-deck-x u/on-deck-y)))
 
 (defn random-piece
   [blocks]
   (let [name (rand-nth u/piece-names)]
-    (assoc (piece name blocks) :current? true)))
+    (assoc (piece name blocks) :on-deck? true)))
