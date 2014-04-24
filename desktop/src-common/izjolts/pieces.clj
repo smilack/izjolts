@@ -12,14 +12,6 @@
         (not= bucket-y (:bucket-y mono))))
     (filterv :monomino? entities)))
 
-(defn can-rotate?
-  [entities piece]
-  true)
-
-(defn rotate-piece
-  [entities current]
-  nil)
-
 (defn can-move?
   [entities piece dx dy]
   (every?
@@ -43,8 +35,10 @@
 
 (defn move-piece
   [piece dx dy]
-  (let [new-entities (map #(move-monomino % dx dy) (:entities piece))]
-    (assoc piece :entities new-entities)))
+  (let [new-entities (map #(move-monomino % dx dy) (:entities piece))
+        new-x (+ dx (:bucket-x piece 0))
+        new-y (+ dy (:bucket-y piece 0))]
+    (assoc piece :entities new-entities :bucket-x new-x :bucket-y new-y)))
 
 (defn shift-piece
   [entities piece direction]
@@ -68,19 +62,31 @@
     (move-piece (- u/start-x u/on-deck-x) (- u/start-y u/on-deck-y))))
 
 (defn piece
-  "Creates a new piece in the on-deck area with default rotation."
-  [name blocks]
+  [name blocks {:keys [rotation x y]}]
   (let [block (name blocks)
-        matrix (-> d/pieces name first reverse) ; flip vertically to match coordinate system
+        matrix (-> d/pieces name (get rotation) reverse) ; flip vertically to match coordinate system
         rows (count matrix)
         cols (count (first matrix))
         monominoes (for [r (range rows) c (range cols) :when (-> matrix (nth r) (nth c))]
                      (move-monomino block c r))
         piece-bundle (apply bundle monominoes)
-        placed-piece (move-piece piece-bundle u/on-deck-x u/on-deck-y)]
-    (assoc placed-piece :name name :rotation 0)))
+        placed-piece (move-piece piece-bundle x y)]
+    (assoc placed-piece :name name :rotation 0 :bucket-x x :bucket-y y)))
 
 (defn random-piece
   [blocks]
   (let [name (rand-nth u/piece-names)]
-    (assoc (piece name blocks) :on-deck? true)))
+    (assoc (piece name blocks {:rotation 0 :x u/on-deck-x :y u/on-deck-y}) :on-deck? true)))
+
+(defn rotate-piece
+  [blocks entities current]
+  (let [name (:name current)
+        rotation (:rotation current)
+        num-rotations (-> d/pieces name count)
+        next-rotation (mod (inc rotation) num-rotations)
+        x (:bucket-x current)
+        y (:bucket-y current)
+        rotated (piece name blocks {:rotation next-rotation :x x :y y})]
+    (if (can-move? entities rotated 0 0)
+      (assoc current :entities (:entities rotated) :rotation next-rotation)
+      nil)))
