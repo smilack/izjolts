@@ -4,8 +4,6 @@
             [play-clj.core :refer :all]
             [play-clj.g2d :refer :all]))
 
-
-
 (defn next-piece
   [entities blocks]
   (let [on-deck (u/find-e :on-deck? entities)
@@ -16,7 +14,7 @@
 (defn move-current
   [entities direction]
   (let [current (u/find-e :current? entities)
-        moved (p/shift-piece current direction)]
+        moved (p/shift-piece entities current direction)]
     moved))
 
 (defscreen main-screen
