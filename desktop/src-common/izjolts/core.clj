@@ -11,6 +11,12 @@
         new-on-deck (p/random-piece blocks)]
     (conj (replace {on-deck new-current} entities) new-on-deck)))
 
+(defn rotate-current
+  [entities]
+  (let [current (u/find-e :current? entities)
+        rotated (p/rotate-piece entities current)]
+    rotated))
+
 (defn move-current
   [entities direction]
   (let [current (u/find-e :current? entities)
@@ -42,7 +48,10 @@
                          (key-code :dpad-right) :right
                          nil)]
       (if-let [moved (move-current entities direction)]
-        (replace {(u/find-e :current? entities) moved} entities))))
+        (replace {(u/find-e :current? entities) moved} entities))
+      (if (= keycode (key-code :dpad-up))
+        (if-let [rotated (rotate-current entities)]
+          (replace {u/find-e :current? entities) rotated} entities))))
   
   :on-timer
   (fn on-timer[{:keys [id blocks]} entities]

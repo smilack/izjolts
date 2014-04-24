@@ -3,6 +3,23 @@
             [izjolts.data :as d]
             [play-clj.core :refer [bundle]]))
 
+(defn not-monomino-conflict?
+  [entities bucket-x bucket-y]
+  (every?
+    (fn [mono]
+      (or
+        (not= bucket-x (:bucket-x mono))
+        (not= bucket-y (:bucket-y mono))))
+    (filterv :monomino? entities)))
+
+(defn can-rotate?
+  [entities piece]
+  true)
+
+(defn rotate-piece
+  [entities current]
+  nil)
+
 (defn can-move?
   [entities piece dx dy]
   (every?
@@ -14,12 +31,7 @@
           (< new-x u/bucket-width)
           (<= 0 new-y)
           (< new-y u/bucket-height)
-          (every?
-            (fn [bucket-mono]
-              (or
-                (not= new-x (:bucket-x bucket-mono))
-                (not= new-y (:bucket-y bucket-mono))))
-            (filterv :monomino? entities)))))
+          (not-monomino-conflict? entities new-x new-y))))
     (:entities piece)))
 
 (defn move-monomino
@@ -64,8 +76,9 @@
         cols (count (first matrix))
         monominoes (for [r (range rows) c (range cols) :when (-> matrix (nth r) (nth c))]
                      (move-monomino block c r))
-        piece-bundle (apply bundle monominoes)]
-    (move-piece piece-bundle u/on-deck-x u/on-deck-y)))
+        piece-bundle (apply bundle monominoes)
+        placed-piece (move-piece piece-bundle u/on-deck-x u/on-deck-y)]
+    (assoc placed-piece :name name :rotation 0)))
 
 (defn random-piece
   [blocks]
