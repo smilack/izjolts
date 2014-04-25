@@ -42,16 +42,17 @@
   
   :on-key-down
   (fn on-key-down[{:keys [keycode blocks]} entities]
-    (if-let [direction (condp = keycode
-                         (key-code :dpad-down) :down
-                         (key-code :dpad-left) :left
-                         (key-code :dpad-right) :right
-                         nil)]
-      (if-let [moved (move-current entities direction)]
-        (replace {(u/find-e :current? entities) moved} entities))
-      (if (= keycode (key-code :dpad-up))
-        (if-let [rotated (rotate-current blocks entities)]
-          (replace {(u/find-e :current? entities) rotated} entities)))))
+    (if-let [current (u/find-e :current? entities)]
+      (if-let [direction (condp = keycode
+                           (key-code :dpad-down) :down
+                           (key-code :dpad-left) :left
+                           (key-code :dpad-right) :right
+                           nil)]
+        (if-let [moved (move-current entities direction)]
+          (replace {current moved} entities))
+        (if (= keycode (key-code :dpad-up))
+          (if-let [rotated (rotate-current blocks entities)]
+            (replace {current rotated} entities))))))
   
   :on-timer
   (fn on-timer[{:keys [id blocks]} entities]
